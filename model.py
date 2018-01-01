@@ -138,8 +138,8 @@ print('Loading images')
 train_dataset, valid_dataset = find_all_dataset('./data', correction=0.25)
 
 # model = LeNet5()
-# model = nVidia9()
-model = newModel14()
+model = nVidia9()
+# model = newModel14()
 
 # X_tmp = feed_data_generator(train_dataset,batch_size=32)
 
