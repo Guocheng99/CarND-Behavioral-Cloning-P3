@@ -53,16 +53,40 @@ def nVidia9():
     https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/
     '''
     model = pre_process_layers()
-    model.add(Convolution2D(24,5,5,subsample=(2,2),activation='relu'))
-    model.add(Convolution2D(36,5,5,subsample=(2,2),activation='relu'))
-    model.add(Convolution2D(48,5,5,subsample=(2,2),activation='relu'))
-    model.add(Convolution2D(64,3,3,activation='relu'))
-    model.add(Convolution2D(64,3,3,activation='relu'))
+    model.add(Convolution2D(24,5,5,subsample=(2,2),activation='relu', init='he_normal'))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(Dropout(0.5))
+
+    model.add(Convolution2D(36,5,5,subsample=(2,2),activation='relu', init='he_normal'))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(Dropout(0.5))
+
+    model.add(Convolution2D(48,5,5,subsample=(2,2),activation='relu', init='he_normal'))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(Dropout(0.5))
+
+    model.add(Convolution2D(64,3,3,activation='relu', init='he_normal'))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(Dropout(0.5))
+
+    model.add(Convolution2D(64,3,3,activation='relu', init='he_normal'))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(Dropout(0.5))
+
     model.add(Flatten())
-    model.add(Dense(100))
-    model.add(Dense(50))
-    model.add(Dense(10))
-    model.add(Dense(1))
+    model.add(Dense(100, init='he_normal'))
+    model.add(ELU())
+    model.add(Dropout(0.5))
+
+    model.add(Dense(50, init='he_normal'))
+    model.add(ELU())
+    model.add(Dropout(0.5))
+
+    model.add(Dense(10, init='he_normal'))
+    model.add(ELU())
+    model.add(Dropout(0.5))
+
+    model.add(Dense(1, init='he_normal'))
 
     return model
 
@@ -145,7 +169,7 @@ print()
 # X_tmp = feed_data_generator(train_dataset,batch_size=32)
 
 print('Training model')
-history = train_model_with_generator(model,train_dataset=train_dataset,valid_dataset=valid_dataset,batch=32,epochs=3)
+history = train_model_with_generator(model,train_dataset=train_dataset,valid_dataset=valid_dataset,batch=32,epochs=10)
 save_model(model,'run4.h5')
 print()
 
