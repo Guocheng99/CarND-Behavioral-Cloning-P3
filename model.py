@@ -54,15 +54,10 @@ def nVidia9():
     '''
     model = pre_process_layers()
     model.add(Convolution2D(24,5,5,subsample=(2,2),activation='relu'))
-    # model.add(Dropout(p=0.9))
     model.add(Convolution2D(36,5,5,subsample=(2,2),activation='relu'))
-    # model.add(Dropout(p=0.8))
     model.add(Convolution2D(48,5,5,subsample=(2,2),activation='relu'))
-    # model.add(Dropout(p=0.7))
     model.add(Convolution2D(64,3,3,activation='relu'))
-    # model.add(Dropout(p=0.6))
     model.add(Convolution2D(64,3,3,activation='relu'))
-    # model.add(Dropout(p=0.5))
     model.add(Flatten())
     model.add(Dense(100))
     model.add(Dense(50))
@@ -141,19 +136,28 @@ train_dataset, valid_dataset = find_all_dataset('./data', correction=0.25)
 model = nVidia9()
 # model = newModel14()
 
+# from keras.utils.visualize_util import plot
+print('Model Summary')
+print(model.summary())
+# plot(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+print()
+
 # X_tmp = feed_data_generator(train_dataset,batch_size=32)
 
 print('Training model')
-history = train_model_with_generator(model,train_dataset=train_dataset,valid_dataset=valid_dataset,batch=32,epochs=8)
-save_model(model,'run3.h5')
+history = train_model_with_generator(model,train_dataset=train_dataset,valid_dataset=valid_dataset,batch=32,epochs=3)
+save_model(model,'run4.h5')
+print()
 
 print(history.history.keys())
 print('Loss')
 print(history.history['loss'])
 print('Validation Loss')
 print(history.history['val_loss'])
+print()
 
 print('The End')
+print()
 
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])

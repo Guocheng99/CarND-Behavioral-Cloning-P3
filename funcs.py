@@ -39,15 +39,15 @@ def new_random_brightness_image(image):
     return image1
 
 
-def translation_image(image, angle, move=10):
+def translation_image(image, angle, move=150):
     # Translation
     rx = move * np.random.uniform(low=-0.5,high=0.5)
     # rx = 0
-    ry = move * np.random.uniform(low=-0.5,high=0.5)
+    ry = 10 * np.random.uniform(low=-0.5,high=0.5)
     M = np.float32([[1, 0, rx], [0, 1, ry]])
 
     image1 = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]))
-    angle1 = angle + rx / move * 2 * 0.02
+    angle1 = angle + rx / move * 2 * 0.2
 
     return image1, angle1
 
@@ -90,7 +90,7 @@ def augment_data(image,angle):
     angles.append(angle)
 
     # Translation for driving on slop
-    image1, angle1 = translation_image(image,angle,move=10)
+    image1, angle1 = translation_image(image,angle,move=150)
     images.append(image1)
     angles.append(angle1)
 
