@@ -54,23 +54,18 @@ def nVidia9():
     '''
     model = pre_process_layers()
     model.add(Convolution2D(24,5,5,subsample=(2,2),activation='relu', init='he_normal'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(Dropout(0.5))
 
     model.add(Convolution2D(36,5,5,subsample=(2,2),activation='relu', init='he_normal'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(Dropout(0.5))
 
     model.add(Convolution2D(48,5,5,subsample=(2,2),activation='relu', init='he_normal'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(Dropout(0.5))
 
     model.add(Convolution2D(64,3,3,activation='relu', init='he_normal'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(Dropout(0.5))
 
     model.add(Convolution2D(64,3,3,activation='relu', init='he_normal'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(Dropout(0.5))
 
     model.add(Flatten())
@@ -170,7 +165,7 @@ print()
 
 print('Training model')
 history = train_model_with_generator(model,train_dataset=train_dataset,valid_dataset=valid_dataset,batch=32,epochs=10)
-save_model(model,'run4.h5')
+save_model(model,'run5.h5')
 print()
 
 print(history.history.keys())
