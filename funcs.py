@@ -39,7 +39,7 @@ def new_random_brightness_image(image):
     return image1
 
 
-def translation_image(image, angle, move=150):
+def translation_image(image, angle, move=200):
     # Translation
     rx = move * np.random.uniform(low=-0.5,high=0.5)
     # rx = 0
@@ -90,7 +90,7 @@ def augment_data(image,angle):
     angles.append(angle)
 
     # Translation for driving on slop
-    image1, angle1 = translation_image(image,angle,move=150)
+    image1, angle1 = translation_image(image,angle,move=200)
     images.append(image1)
     angles.append(angle1)
 
@@ -100,3 +100,32 @@ def augment_data(image,angle):
     angles.append(angle)
 
     return images,angles
+
+def augment_data_single(image,angle):
+
+    '''
+    https://chatbotslife.com/using-augmentation-to-mimic-human-driving-496b569760a9
+    '''
+
+    images = []
+    angles = []
+
+    # Brightness
+    img = new_random_brightness_image(image)
+
+    # Translation for driving on slop
+    img, angle1 = translation_image(img,angle,move=200)
+
+    # shadow
+    img = add_random_shadow_image(img)
+
+    # Flipping
+    flip = np.random.randint(2)
+    if flip == 0:
+        img = cv2.flip(img, 1)
+        angle1 = angle1 * -1.0
+
+    images.append(img)
+    angles.append(angle1)
+
+    return images, angles

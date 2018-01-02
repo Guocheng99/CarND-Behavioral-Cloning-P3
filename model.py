@@ -21,7 +21,7 @@ def feed_data_generator(dataset,batch_size=128):
                 img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
                 images.append(img)
                 angles.append(angle)
-                moreImgs,moreAngles = augment_data(img,angle=angle)
+                moreImgs, moreAngles = augment_data_single(img,angle=angle)
                 images = images + moreImgs
                 angles = angles + moreAngles
 
@@ -139,7 +139,7 @@ def train_model_with_generator(model, train_dataset, valid_dataset,batch=128,epo
     valid_generator = feed_data_generator(dataset=valid_dataset,batch_size=batch)
 
     model.compile(loss='mse', optimizer='adam')
-    history = model.fit_generator(train_generator,samples_per_epoch=len(train_dataset)*5,nb_epoch=epochs,
+    history = model.fit_generator(train_generator,samples_per_epoch=len(train_dataset)*2,nb_epoch=epochs,
                                   validation_data=valid_generator,nb_val_samples=len(valid_dataset),
                                   verbose=1)
     return history
@@ -152,8 +152,8 @@ print('Loading images')
 train_dataset, valid_dataset = find_all_dataset('./data', correction=0.25)
 
 # model = LeNet5()
-model = nVidia9()
-# model = newModel14()
+#model = nVidia9()
+model = newModel14()
 
 # from keras.utils.visualize_util import plot
 print('Model Summary')
@@ -165,7 +165,7 @@ print()
 
 print('Training model')
 history = train_model_with_generator(model,train_dataset=train_dataset,valid_dataset=valid_dataset,batch=32,epochs=10)
-save_model(model,'run5.h5')
+save_model(model,'run6.h5')
 print()
 
 print(history.history.keys())
@@ -183,6 +183,6 @@ plt.plot(history.history['val_loss'])
 plt.title('model mean squared error loss')
 plt.ylabel('mean squared error loss')
 plt.xlabel('epoch')
-plt.grid('True')
+plt.grid(b='on')
 plt.legend(['training set', 'validation set'], loc='upper right')
 plt.show()
