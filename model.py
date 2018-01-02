@@ -30,6 +30,44 @@ def feed_data_generator(dataset,batch_size=128):
 
             yield shuffle(inputs,outputs)
 
+def feed_data_generator_single_line(dataset,batch_size=128):
+    num_data = len(dataset)
+    while 1:
+        dataset = shuffle(dataset)
+        for offset in range(0,num_data,batch_size):
+            batch = dataset[offset:offset+batch_size]
+            images = []
+            angles = []
+            for imgPath_c, imgPath_l, imgPath_r,angle in batch:
+                new_img, new_angle = pick_one_to_transform_for_generator(imgPath_c, imgPath_l, imgPath_r, angle)
+                images.append(new_img)
+                angles.append(new_angle)
+
+            inputs = np.array(images)
+            outputs = np.array(angles)
+            yield shuffle(inputs,outputs)
+
+def pick_one_to_transform_for_generator(img_c, img_l, img_r, angle):
+    i_lrc = np.random.randint(3)
+    if (i_lrc == 0):
+        path_file = img_l
+        shift_ang = .25
+    if (i_lrc == 1):
+        path_file = img_c
+        shift_ang = 0.
+    if (i_lrc == 2):
+        path_file = img_r
+        shift_ang = -.25
+
+    new_img = cv2.imread(path_file)
+    new_img = cv2.cvtColor(new_img, cv2.COLOR_BGR2RGB)
+    new_angle = angle+shift_ang
+
+    new_img, new_angle = transform_data_single(new_img, angle=new_angle)
+
+    return new_img,new_angle
+
+
 def pre_process_layers():
     model = Sequential()
     model.add(Lambda(lambda x:(x/255.0)-0.5,input_shape=(160,320,3)))
@@ -138,10 +176,13 @@ def train_model_with_generator(model, train_dataset, valid_dataset,batch=128,epo
     train_generator = feed_data_generator(dataset=train_dataset,batch_size=batch)
     valid_generator = feed_data_generator(dataset=valid_dataset,batch_size=batch)
 
+    # train_generator = feed_data_generator_single_line(dataset=train_dataset,batch_size=batch)
+    # valid_generator = feed_data_generator_single_line(dataset=valid_dataset,batch_size=batch)
+
     model.compile(loss='mse', optimizer='adam')
-    history = model.fit_generator(train_generator,samples_per_epoch=len(train_dataset)*2,nb_epoch=epochs,
-                                  validation_data=valid_generator,nb_val_samples=len(valid_dataset),
-                                  verbose=1)
+    history = model.fit_generator(train_generator,samples_per_epoch=len(train_dataset)*2,
+                                  nb_epoch=epochs,validation_data=valid_generator,
+                                  nb_val_samples=len(valid_dataset),verbose=1)
     return history
 
 def save_model(model, modelfile):
@@ -150,10 +191,11 @@ def save_model(model, modelfile):
 
 print('Loading images')
 train_dataset, valid_dataset = find_all_dataset('./data', correction=0.25)
+#train_dataset, valid_dataset = find_all_dataset_single_line('./data')
 
 # model = LeNet5()
-#model = nVidia9()
-model = newModel14()
+model = nVidia9()
+#model = newModel14()
 
 # from keras.utils.visualize_util import plot
 print('Model Summary')
@@ -164,7 +206,9 @@ print()
 # X_tmp = feed_data_generator(train_dataset,batch_size=32)
 
 print('Training model')
-history = train_model_with_generator(model,train_dataset=train_dataset,valid_dataset=valid_dataset,batch=32,epochs=10)
+history = train_model_with_generator(model,train_dataset=train_dataset,
+                                     valid_dataset=valid_dataset,
+                                     batch=32,epochs=10)
 save_model(model,'run6.h5')
 print()
 

@@ -4,6 +4,32 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from pandas.io.parsers import read_csv
 
+def find_all_dataset_single_line(basePath):
+    lines = read_csv(basePath + '/driving_log.csv').values
+    images_c = []
+    images_l = []
+    images_r = []
+    angles = []
+    for line in lines:
+        angle = float(line[3])
+        angles.append(angle)
+        # Center image
+        images_c.append(basePath + '/' + line[0].strip())
+
+        # Left image
+        images_l.append(basePath + '/' + line[1].strip())
+
+        # Right image
+        images_r.append(basePath + '/' + line[2].strip())
+
+
+    dataset = list(zip(images_c,images_l,images_r,angles))
+    print(len(dataset))
+
+    train_dataset, valid_dataset = train_test_split(dataset,test_size=0.2)
+
+    return train_dataset,valid_dataset
+
 
 def find_all_dataset(basePath,correction=0.25):
     lines = read_csv(basePath + '/driving_log.csv').values
@@ -39,7 +65,7 @@ def new_random_brightness_image(image):
     return image1
 
 
-def translation_image(image, angle, move=200):
+def translation_image(image, angle, move=150):
     # Translation
     rx = move * np.random.uniform(low=-0.5,high=0.5)
     # rx = 0
@@ -90,7 +116,7 @@ def augment_data(image,angle):
     angles.append(angle)
 
     # Translation for driving on slop
-    image1, angle1 = translation_image(image,angle,move=200)
+    image1, angle1 = translation_image(image,angle,move=150)
     images.append(image1)
     angles.append(angle1)
 
@@ -114,7 +140,7 @@ def augment_data_single(image,angle):
     img = new_random_brightness_image(image)
 
     # Translation for driving on slop
-    img, angle1 = translation_image(img,angle,move=200)
+    img, angle1 = translation_image(img,angle,move=150)
 
     # shadow
     img = add_random_shadow_image(img)
@@ -129,3 +155,26 @@ def augment_data_single(image,angle):
     angles.append(angle1)
 
     return images, angles
+
+def transform_data_single(image,angle):
+
+    '''
+    https://chatbotslife.com/using-augmentation-to-mimic-human-driving-496b569760a9
+    '''
+
+    # Brightness
+    img = new_random_brightness_image(image)
+
+    # Translation for driving on slop
+    img, angle1 = translation_image(img,angle,move=150)
+
+    # shadow
+    img = add_random_shadow_image(img)
+
+    # Flipping
+    flip = np.random.randint(2)
+    if flip == 0:
+        img = cv2.flip(img, 1)
+        angle1 = angle1 * -1.0
+
+    return img, angle1
