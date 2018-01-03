@@ -4,32 +4,6 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from pandas.io.parsers import read_csv
 
-def find_all_dataset_single_line(basePath):
-    lines = read_csv(basePath + '/driving_log.csv').values
-    images_c = []
-    images_l = []
-    images_r = []
-    angles = []
-    for line in lines:
-        angle = float(line[3])
-        angles.append(angle)
-        # Center image
-        images_c.append(basePath + '/' + line[0].strip())
-
-        # Left image
-        images_l.append(basePath + '/' + line[1].strip())
-
-        # Right image
-        images_r.append(basePath + '/' + line[2].strip())
-
-
-    dataset = list(zip(images_c,images_l,images_r,angles))
-    print(len(dataset))
-
-    train_dataset, valid_dataset = train_test_split(dataset,test_size=0.2)
-
-    return train_dataset,valid_dataset
-
 
 def find_all_dataset(basePath,correction=0.25):
     lines = read_csv(basePath + '/driving_log.csv').values
@@ -68,7 +42,6 @@ def new_random_brightness_image(image):
 def translation_image(image, angle, move=150):
     # Translation
     rx = move * np.random.uniform(low=-0.5,high=0.5)
-    # rx = 0
     ry = 10 * np.random.uniform(low=-0.5,high=0.5)
     M = np.float32([[1, 0, rx], [0, 1, ry]])
 
@@ -78,6 +51,9 @@ def translation_image(image, angle, move=150):
     return image1, angle1
 
 def add_random_shadow_image(image):
+    '''
+    https://chatbotslife.com/using-augmentation-to-mimic-human-driving-496b569760a9
+    '''
     top_y = 320*np.random.uniform()
     top_x = 0
     bot_x = 160
@@ -88,7 +64,6 @@ def add_random_shadow_image(image):
     Y_m = np.mgrid[0:image.shape[0],0:image.shape[1]][1]
 
     shadow_mask[((X_m-top_x)*(bot_y-top_y) -(bot_x - top_x)*(Y_m-top_y) >=0)]=1
-    #random_bright = .25+.7*np.random.uniform()
     if np.random.randint(2) == 1:
         random_bright = .5
         cond1 = (shadow_mask == 1)
@@ -128,7 +103,6 @@ def augment_data(image,angle):
     return images,angles
 
 def augment_data_single(image,angle):
-
     '''
     https://chatbotslife.com/using-augmentation-to-mimic-human-driving-496b569760a9
     '''
@@ -155,26 +129,3 @@ def augment_data_single(image,angle):
     angles.append(angle1)
 
     return images, angles
-
-def transform_data_single(image,angle):
-
-    '''
-    https://chatbotslife.com/using-augmentation-to-mimic-human-driving-496b569760a9
-    '''
-
-    # Brightness
-    img = new_random_brightness_image(image)
-
-    # Translation for driving on slop
-    img, angle1 = translation_image(img,angle,move=150)
-
-    # shadow
-    img = add_random_shadow_image(img)
-
-    # Flipping
-    flip = np.random.randint(2)
-    if flip == 0:
-        img = cv2.flip(img, 1)
-        angle1 = angle1 * -1.0
-
-    return img, angle1
