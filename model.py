@@ -150,34 +150,35 @@ def save_model(model, modelfile):
     model.save(modelfile)
     print("Model saved at " + modelfile)
 
-# model = LeNet5()
-#model = newModel11()
-model = nVidia9()
 
+if __name__ == '__main__':
+    # model = LeNet5()
+    # model = newModel11()
+    model = nVidia9()
 
-print('Loading images')
-train_dataset, valid_dataset = find_all_dataset('./data', correction=0.25)
+    print('Loading images')
+    train_dataset, valid_dataset = find_all_dataset('./data', correction=0.25)
 
-print('Training model')
-history = train_model_with_generator(model,train_dataset=train_dataset,
-                                     valid_dataset=valid_dataset,
-                                     batch=32,epochs=10)
-save_model(model,'run6.h5')
-print()
+    print('Training model')
+    history = train_model_with_generator(model,train_dataset=train_dataset,
+                                         valid_dataset=valid_dataset,
+                                         batch=32,epochs=10)
+    save_model(model,'lenet.h5')
+    print()
 
-# print(history.history.keys())
-print('Loss')
-print(history.history['loss'])
-print('Validation Loss')
-print(history.history['val_loss'])
-print('The End')
-print()
+    # print(history.history.keys())
+    print('Loss')
+    print(history.history['loss'])
+    print('Validation Loss')
+    print(history.history['val_loss'])
+    print('The End')
+    print()
 
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.title('model mean squared error loss')
-plt.ylabel('mean squared error loss')
-plt.xlabel('epoch')
-plt.grid(b='on')
-plt.legend(['training set', 'validation set'], loc='upper right')
-plt.show()
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model mean squared error loss')
+    plt.ylabel('mean squared error loss')
+    plt.xlabel('epoch')
+    plt.grid(b='on')
+    plt.legend(['training set', 'validation set'], loc='upper right')
+    plt.show()

@@ -39,7 +39,7 @@ def new_random_brightness_image(image):
     return image1
 
 
-def translation_image(image, angle, move=150):
+def shift_image(image, angle, move=150):
     # Translation
     rx = move * np.random.uniform(low=-0.5,high=0.5)
     ry = 10 * np.random.uniform(low=-0.5,high=0.5)
@@ -91,7 +91,7 @@ def augment_data(image,angle):
     angles.append(angle)
 
     # Translation for driving on slop
-    image1, angle1 = translation_image(image,angle,move=150)
+    image1, angle1 = shift_image(image, angle, move=150)
     images.append(image1)
     angles.append(angle1)
 
@@ -114,7 +114,7 @@ def augment_data_single(image,angle):
     img = new_random_brightness_image(image)
 
     # Translation for driving on slop
-    img, angle1 = translation_image(img,angle,move=150)
+    img, angle1 = shift_image(img, angle, move=150)
 
     # shadow
     img = add_random_shadow_image(img)
